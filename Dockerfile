@@ -1,6 +1,6 @@
 FROM php:8.3-apache
 
-# Install system packages
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -9,12 +9,14 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libicu-dev \
     && docker-php-ext-install \
+        pdo \
         pdo_mysql \
         mbstring \
-        zip \
         bcmath \
-        exif
+        exif \
+        zip
 
 # Enable Apache rewrite
 RUN a2enmod rewrite
@@ -22,27 +24,32 @@ RUN a2enmod rewrite
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy project
+# Copy composer files first (better build cache)
+COPY composer.json composer.lock ./
+
+RUN composer install \
+    --no-dev \
+    --prefer-dist \
+    --no-interaction \
+    --optimize-autoloader
+
+# Copy the rest of the application
 COPY . .
 
-# Install Laravel dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Make Apache serve the public folder
+# Apache document root
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/*.conf
-
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' \
+    /etc/apache2/sites-available/*.conf \
     /etc/apache2/apache2.conf \
     /etc/apache2/conf-available/*.conf
 
-# Set permissions
+# Permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
+
+RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 80
 
