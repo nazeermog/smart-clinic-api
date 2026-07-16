@@ -49,6 +49,9 @@ RUN sed -ri \
     /etc/apache2/sites-available/*.conf \
     /etc/apache2/apache2.conf
 
+RUN apache2ctl -M
+RUN ls -l /etc/apache2/mods-enabled
+
 EXPOSE 80
 
 CMD ["apache2-foreground"]
