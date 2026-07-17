@@ -69,7 +69,7 @@ RUN if grep -q '^\s*listen\s*=.*$' /usr/local/etc/php-fpm.d/www.conf; then \
         echo 'listen.mode = 0660' >> /usr/local/etc/php-fpm.d/www.conf; \
     fi
 
-# Configure nginx for Laravel
+# Configure nginx for Laravddel
 RUN mkdir -p /etc/nginx/sites-enabled
 COPY docker/nginx.conf /etc/nginx/sites-enabled/default
 
