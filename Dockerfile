@@ -1,8 +1,7 @@
-FROM php:8.3-fpm
+FROM php:8.3-apache
 
 # Install system packages and PHP extensions
 RUN apt-get update && apt-get install -y \
-    nginx \
     unzip \
     zip \
     git \
@@ -19,6 +18,8 @@ RUN apt-get update && apt-get install -y \
         bcmath \
         exif \
         zip \
+        intl \
+    && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
@@ -26,35 +27,24 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy application
-COPY . .
-
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-RUN composer install \
-    --no-dev \
-    --optimize-autoloader \
-    --no-interaction
+# Install PHP dependencies first for build caching
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Laravel required directories
-RUN mkdir -p \
-    storage/framework/cache \
-    storage/framework/sessions \
-    storage/framework/views \
-    bootstrap/cache
+# Copy the application
+COPY . .
 
-# Permissions
-RUN chown -R www-data:www-data storage bootstrap/cache
-RUN chmod -R 775 storage bootstrap/cache
+# Prepare Laravel runtime directories and permissions
+RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
-# Configure PHP-FPM to use Unix socket instead of TCP port 9000
-RUN sed -i 's!^listen = .*!listen = /run/php/php-fpm.sock!' /usr/local/etc/php-fpm.d/www.conf
-RUN mkdir -p /run/php && chown www-data:www-data /run/php
+# Serve Laravel from public directory
+RUN sed -ri 's!DocumentRoot /var/www/html!DocumentRoot /var/www/html/public!g' /etc/apache2/sites-available/*.conf \
+    && sed -ri 's!<Directory /var/www/>!<Directory /var/www/html/public>!g' /etc/apache2/apache2.conf
 
-# Configure nginx for Laravel
-RUN mkdir -p /etc/nginx/sites-enabled
-COPY docker/nginx.conf /etc/nginx/sites-enabled/default
+EXPOSE 80
 
-EXPOSE 9000
-
-CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'" ]
+CMD ["apache2-foreground"]
