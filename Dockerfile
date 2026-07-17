@@ -51,6 +51,6 @@ RUN chmod -R 775 storage bootstrap/cache
 RUN mkdir -p /etc/nginx/sites-enabled
 COPY docker/nginx.conf /etc/nginx/sites-enabled/default
 
-EXPOSE 80
+EXPOSE 9000
 
 CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'" ]
