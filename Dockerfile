@@ -1,9 +1,9 @@
 FROM php:8.3-apache
 
 RUN apt-get update && apt-get install -y \
-    git \
     unzip \
     zip \
+    git \
     curl \
     libzip-dev \
     libpng-dev \
@@ -42,15 +42,14 @@ RUN mkdir -p \
 
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN chmod -R 775 storage bootstrap/cache
 
+# Laravel public folder
 RUN sed -ri \
     -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/*.conf \
-    /etc/apache2/apache2.conf
+    /etc/apache2/sites-available/000-default.conf
 
-RUN apache2ctl -M
-RUN ls -l /etc/apache2/mods-enabled
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 EXPOSE 80
 
