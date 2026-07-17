@@ -25,6 +25,7 @@ RUN a2enmod rewrite
 
 # Fix Apache MPM conflict
 RUN a2dismod mpm_event mpm_worker || true
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf /etc/apache2/mods-enabled/mpm_worker.load /etc/apache2/mods-enabled/mpm_worker.conf || true
 RUN a2enmod mpm_prefork
 
 # Install Composer
@@ -53,7 +54,6 @@ RUN mkdir -p \
 
 # Permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
-
 RUN chmod -R 775 storage bootstrap/cache
 
 # Apache document root for Laravel
