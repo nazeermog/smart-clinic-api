@@ -3,7 +3,6 @@ FROM php:8.3-fpm
 # Install system packages and PHP extensions
 RUN apt-get update && apt-get install -y \
     nginx \
-    gettext-base \
     unzip \
     zip \
     git \
@@ -54,4 +53,4 @@ COPY docker/nginx.conf /etc/nginx/sites-enabled/default
 
 EXPOSE 9000
 
-CMD ["sh", "-c", "envsubst '$PORT' < /etc/nginx/sites-enabled/default > /etc/nginx/conf.d/default.conf && php-fpm -D && nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'" ]
