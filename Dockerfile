@@ -47,6 +47,10 @@ RUN mkdir -p \
 RUN chown -R www-data:www-data storage bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
+# Configure PHP-FPM to use Unix socket instead of TCP port 9000
+RUN sed -i 's!^listen = .*!listen = /run/php/php-fpm.sock!' /usr/local/etc/php-fpm.d/www.conf
+RUN mkdir -p /run/php && chown www-data:www-data /run/php
+
 # Configure nginx for Laravel
 RUN mkdir -p /etc/nginx/sites-enabled
 COPY docker/nginx.conf /etc/nginx/sites-enabled/default
