@@ -1,7 +1,8 @@
-FROM php:8.3-apache
+FROM php:8.3-fpm
 
 # Install system packages and PHP extensions
 RUN apt-get update && apt-get install -y \
+    nginx \
     unzip \
     zip \
     git \
@@ -20,24 +21,14 @@ RUN apt-get update && apt-get install -y \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
-# Enable Laravel Apache rewrite
-RUN a2enmod rewrite
-
-# Fix Apache MPM conflict
-RUN a2dismod mpm_event mpm_worker || true
-RUN rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf /etc/apache2/mods-enabled/mpm_worker.load /etc/apache2/mods-enabled/mpm_worker.conf || true
-RUN a2enmod mpm_prefork
-
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Laravel project directory
 WORKDIR /var/www/html
 
 # Copy application
 COPY . .
 
-# Composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 RUN composer install \
@@ -56,13 +47,10 @@ RUN mkdir -p \
 RUN chown -R www-data:www-data storage bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
-# Apache document root for Laravel
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-
-RUN sed -ri \
-    -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/000-default.conf
+# Configure nginx for Laravel
+RUN mkdir -p /etc/nginx/sites-enabled
+COPY docker/nginx.conf /etc/nginx/sites-enabled/default
 
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'" ]
