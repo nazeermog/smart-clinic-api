@@ -6,7 +6,6 @@ use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\SpecialtyController;
 use Illuminate\Support\Facades\Route;
 
-// Public auth routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -39,7 +38,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/appointments/today/{doctor_id}', [AppointmentController::class, 'doctorTodayAppointments']);
         Route::get('/appointments/doctor/{doctor_id}', [AppointmentController::class, 'doctorAllAppointments']);
         Route::put('/appointments/{id}', [AppointmentController::class, 'updateStatus']);
-        Route::put('/appointments/{id}/status', [AppointmentController::class, 'updateStatus']);
         Route::put('/appointments/{id}/notes', [AppointmentController::class, 'updateNotes']);
     });
 });
