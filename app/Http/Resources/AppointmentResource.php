@@ -10,6 +10,10 @@ class AppointmentResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'patient_full_name' => $this->patient?->full_name,
+            'patient_email' => $this->patient?->email,
+            'doctor_full_name' => $this->doctor?->user?->full_name,
+            'doctor_email' => $this->doctor?->user?->email,
             'patient' => PatientResource::make($this->whenLoaded('patient')),
             'doctor' => DoctorResource::make($this->whenLoaded('doctor')),
             'appointment_date' => $this->appointment_date?->format('Y-m-d H:i:s'),

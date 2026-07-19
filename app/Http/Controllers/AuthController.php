@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Doctor;
+use App\Models\Specialty;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,12 +16,28 @@ class AuthController extends Controller
 {
     public function register(RegisterRequest $request): JsonResponse
     {
+        $role = $request->role ?? 'patient';
+
         $user = User::create([
             'full_name' => $request->full_name,
             'email' => $request->email,
             'password' => $request->password,
-            'role' => $request->role ?? 'patient',
+            'role' => $role,
         ]);
+
+        if ($role === 'doctor') {
+            $specialty = Specialty::find($request->specialty_id) ?? Specialty::first();
+
+            if ($specialty) {
+                Doctor::firstOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'specialty_id' => $specialty->id,
+                        'consultation_fee' => $request->consultation_fee ?? 0,
+                    ]
+                );
+            }
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('full_name');
             $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['doctor', 'patient'])->default('patient');
             $table->rememberToken();

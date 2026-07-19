@@ -10,11 +10,11 @@ class SpecialtySeeder extends Seeder
     public function run(): void
     {
         $specialties = [
-            'Cardiology',
-            'Pediatrics',
-            'Dentist',
-            'Neurology',
-            'Orthopedics',
+            'طب القلب',
+            'طب الأطفال',
+            'طب الأسنان',
+            'طب الأعصاب',
+            'جراحة العظام',
         ];
 
         foreach ($specialties as $name) {

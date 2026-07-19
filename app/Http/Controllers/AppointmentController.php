@@ -114,7 +114,7 @@ class AppointmentController extends Controller
             return $this->error('Doctor profile not found', [], JsonResponse::HTTP_NOT_FOUND);
         }
 
-        $appointments = Appointment::with(['patient', 'doctor.specialty'])
+        $appointments = Appointment::with(['patient', 'doctor.user', 'doctor.specialty'])
             ->where('doctor_id', $doctor->id)
             ->whereDate('appointment_date', today())
             ->orderBy('appointment_date')
@@ -133,7 +133,7 @@ class AppointmentController extends Controller
             return $this->error('Doctor profile not found', [], JsonResponse::HTTP_NOT_FOUND);
         }
 
-        $appointments = Appointment::with(['patient', 'doctor.specialty'])
+        $appointments = Appointment::with(['patient', 'doctor.user', 'doctor.specialty'])
             ->where('doctor_id', $doctor->id)
             ->orderByDesc('appointment_date')
             ->get();

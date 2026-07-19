@@ -18,7 +18,9 @@ class RegisterRequest extends FormRequest
         return [
             'full_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'confirmed', Password::min(8)],
+            'password' => ['required', 'string', 'confirmed', Password::min(6)],
+            'specialty_id' => ['nullable', 'integer', Rule::exists('specialties', 'id')],
+            'consultation_fee' => ['nullable', 'numeric', 'min:0'],
             'role' => ['nullable', 'string', Rule::in(['doctor', 'patient'])],
         ];
     }
