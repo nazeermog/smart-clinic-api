@@ -12,23 +12,23 @@ class PatientSeeder extends Seeder
     {
         $patients = [
             [
-                'full_name' => 'Test Patient',
+                'full_name' => 'مريض تجريبي',
                 'email' => 'patient@smartclinic.com',
             ],
             [
-                'full_name' => 'Alice Walker',
+                'full_name' => 'أليس ووكر',
                 'email' => 'alice.walker@smartclinic.com',
             ],
             [
-                'full_name' => 'Mohamed Ali',
+                'full_name' => 'محمد علي',
                 'email' => 'mohamed.ali@smartclinic.com',
             ],
             [
-                'full_name' => 'Fatima Noor',
+                'full_name' => 'فاطمة نور',
                 'email' => 'fatima.noor@smartclinic.com',
             ],
             [
-                'full_name' => 'Carlos Ruiz',
+                'full_name' => 'كارلوس رويز',
                 'email' => 'carlos.ruiz@smartclinic.com',
             ],
         ];

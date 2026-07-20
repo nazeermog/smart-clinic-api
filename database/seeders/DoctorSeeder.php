@@ -22,49 +22,49 @@ class DoctorSeeder extends Seeder
             [
                 'full_name' => 'د. أحمد الشامي',
                 'email' => 'ahmed.shami@smartclinic.com',
-                'specialty' => 'طب القلب',
+                'specialty_id' => 1,
                 'consultation_fee' => 250.00,
             ],
             [
                 'full_name' => 'د. سارة الحمود',
                 'email' => 'sara.hamoud@smartclinic.com',
-                'specialty' => 'طب الأطفال',
+                'specialty_id' => 2,
                 'consultation_fee' => 180.00,
             ],
             [
                 'full_name' => 'د. محمد العلي',
                 'email' => 'mohammad.ali@smartclinic.com',
-                'specialty' => 'طب الأسنان',
+                'specialty_id' => 3,
                 'consultation_fee' => 150.00,
             ],
             [
                 'full_name' => 'د. ريم القيسي',
                 'email' => 'reem.qaisi@smartclinic.com',
-                'specialty' => 'طب الأعصاب',
+                'specialty_id' => 4,
                 'consultation_fee' => 320.00,
             ],
             [
                 'full_name' => 'د. خالد المدني',
                 'email' => 'khaled.almadani@smartclinic.com',
-                'specialty' => 'جراحة العظام',
+                'specialty_id' => 5,
                 'consultation_fee' => 200.00,
             ],
             [
                 'full_name' => 'د. لين أحمد',
                 'email' => 'leen.ahmed@smartclinic.com',
-                'specialty' => 'طب القلب',
+                'specialty_id' => 1,
                 'consultation_fee' => 275.00,
             ],
             [
                 'full_name' => 'د. ياسر فهد',
                 'email' => 'yasser.fahd@smartclinic.com',
-                'specialty' => 'طب الأطفال',
+                'specialty_id' => 2,
                 'consultation_fee' => 190.00,
             ],
         ];
 
         foreach ($doctorsData as $data) {
-            $specialty = $specialties->firstWhere('name', $data['specialty']);
+            $specialty = $specialties->firstWhere('id', $data['specialty_id']);
 
             if (!$specialty) {
                 continue;

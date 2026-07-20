@@ -11,54 +11,71 @@ class AppointmentSeeder extends Seeder
 {
     public function run(): void
     {
-        $doctors = Doctor::all();
+        $doctors = Doctor::with('user')->get();
         $patients = User::where('role', 'patient')->get();
 
         if ($doctors->isEmpty() || $patients->isEmpty()) {
             return;
         }
 
-        // Create some sample appointments for each doctor
         foreach ($doctors as $doctor) {
-            // Today's appointment
-            Appointment::create([
-                'patient_id' => $patients->random()->id,
-                'doctor_id' => $doctor->id,
-                'appointment_date' => now()->setHour(10)->setMinute(0)->setSecond(0),
-                'status' => 'confirmed',
-            ]);
+            $patientIds = $patients->pluck('id')->all();
 
-            Appointment::create([
-                'patient_id' => $patients->random()->id,
-                'doctor_id' => $doctor->id,
-                'appointment_date' => now()->setHour(14)->setMinute(30)->setSecond(0),
-                'status' => 'pending',
-            ]);
+            Appointment::firstOrCreate(
+                [
+                    'doctor_id' => $doctor->id,
+                    'appointment_date' => now()->setHour(10)->setMinute(0)->setSecond(0),
+                ],
+                [
+                    'patient_id' => $patientIds[array_rand($patientIds)],
+                    'status' => 'confirmed',
+                ]
+            );
 
-            // Upcoming appointment
-            Appointment::create([
-                'patient_id' => $patients->random()->id,
-                'doctor_id' => $doctor->id,
-                'appointment_date' => now()->addDays(3)->setHour(11)->setMinute(0)->setSecond(0),
-                'status' => 'pending',
-            ]);
+            Appointment::firstOrCreate(
+                [
+                    'doctor_id' => $doctor->id,
+                    'appointment_date' => now()->setHour(14)->setMinute(30)->setSecond(0),
+                ],
+                [
+                    'patient_id' => $patientIds[array_rand($patientIds)],
+                    'status' => 'pending',
+                ]
+            );
 
-            // Completed appointment with notes
-            Appointment::create([
-                'patient_id' => $patients->random()->id,
-                'doctor_id' => $doctor->id,
-                'appointment_date' => now()->subDays(7)->setHour(9)->setMinute(0)->setSecond(0),
-                'status' => 'completed',
-                'doctor_notes' => 'Patient examined. Prescribed medication for 7 days. Follow-up recommended in 2 weeks.',
-            ]);
+            Appointment::firstOrCreate(
+                [
+                    'doctor_id' => $doctor->id,
+                    'appointment_date' => now()->addDays(3)->setHour(11)->setMinute(0)->setSecond(0),
+                ],
+                [
+                    'patient_id' => $patientIds[array_rand($patientIds)],
+                    'status' => 'pending',
+                ]
+            );
 
-            // Cancelled appointment
-            Appointment::create([
-                'patient_id' => $patients->random()->id,
-                'doctor_id' => $doctor->id,
-                'appointment_date' => now()->subDays(2)->setHour(15)->setMinute(0)->setSecond(0),
-                'status' => 'cancelled',
-            ]);
+            Appointment::firstOrCreate(
+                [
+                    'doctor_id' => $doctor->id,
+                    'appointment_date' => now()->subDays(7)->setHour(9)->setMinute(0)->setSecond(0),
+                ],
+                [
+                    'patient_id' => $patientIds[array_rand($patientIds)],
+                    'status' => 'completed',
+                    'doctor_notes' => 'تم فحص المريض. تم وصف العلاج لمدة 7 أيام. يُنصح بمتابعة خلال أسبوعين.',
+                ]
+            );
+
+            Appointment::firstOrCreate(
+                [
+                    'doctor_id' => $doctor->id,
+                    'appointment_date' => now()->subDays(2)->setHour(15)->setMinute(0)->setSecond(0),
+                ],
+                [
+                    'patient_id' => $patientIds[array_rand($patientIds)],
+                    'status' => 'cancelled',
+                ]
+            );
         }
     }
 }
